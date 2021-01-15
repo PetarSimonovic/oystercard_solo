@@ -55,20 +55,31 @@ describe Oystercard do
     it { is_expected.to respond_to(:touch_in) }
 
     it "cannot touch_in unless it has the minimum fare" do
-      expect{ subject.touch_in }.to raise_error if "Balance is too low"
+      expect{ subject.touch_in(station) }.to raise_error if "Balance is too low"
     end
 
     it "records entry_station" do
-      topped_up_card.touch_in(:station)
-      expect(topped_up_card.journey).to include(:entry_station => :station)
+      topped_up_card.touch_in(:entry_station)
+      expect(topped_up_card.journey).to include(:entry_station => :entry_station)
     end
 
   end
 
   describe "#touch_out" do
 
-    it "touch_out deducts the minimum fare" do
-      expect{ subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
+    it "deducts the minimum fare" do
+      expect{ subject.touch_out(:exit_station) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
+    end
+
+    it "should remember the exit_station" do
+      topped_up_card.touch_out(:exit_station)
+      expect(topped_up_card.journey).to include(:exit_station => :exit_station)
+    end
+
+    it "should save a history of all journeys" do
+      topped_up_card.touch_in(:entry_station)
+      topped_up_card.touch_out(:exit_station)
+      expect(topped_up_card.journey_history).to include(topped_up_card.journey)
     end
 
   end
@@ -86,7 +97,7 @@ describe Oystercard do
         end
 
         it "should not be in_journey after touch_out" do
-          topped_up_card.touch_out
+          topped_up_card.touch_out(:exit_station)
           expect(topped_up_card).not_to be_in_journey
         end
 
