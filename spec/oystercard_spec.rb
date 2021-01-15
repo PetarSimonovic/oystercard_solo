@@ -5,6 +5,9 @@ describe Oystercard do
   let(:topped_up_card) { Oystercard.new(Oystercard::CARD_LIMIT) }
   let(:entry_station) { double :station }
   let(:exit_station) { double :station }
+  let(:start_zone) { double :zone }
+  let(:end_zone) { double :zone }
+
 
 
   describe '#initialize' do

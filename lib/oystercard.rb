@@ -1,3 +1,5 @@
+require_relative 'station'
+
 class Oystercard
 
   CARD_LIMIT = 90
@@ -27,6 +29,7 @@ class Oystercard
   end
 
   def touch_in(station)
+    @journey = {}
     fail "Balance is too low" if @balance < MINIMUM_FARE
 
     @in_transit = true
@@ -38,7 +41,6 @@ class Oystercard
     deduct(MINIMUM_FARE)
     @journey[:exit_station] = station
     @journey_history << @journey
-    @journey = {}
   end
 
   def in_journey?
