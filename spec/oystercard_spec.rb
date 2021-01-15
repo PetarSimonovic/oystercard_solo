@@ -2,7 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
 
-  let(:topped_up_card) { described_class.new }
+  let(:topped_up_card) { Oystercard.new(Oystercard::CARD_LIMIT) }
 
 
   describe '#initialize' do
@@ -10,7 +10,7 @@ describe Oystercard do
     it { is_expected.to respond_to(:balance) }
 
 
-    it "has a balance of zero" do
+    it "has a balance of zero unless specified" do
       expect(subject.balance).to eq 0
     end
 
@@ -21,7 +21,7 @@ describe Oystercard do
     it {is_expected.to respond_to(:top_up).with(1).argument }
 
     it "should add amount to the balance" do
-    expect{ subject.top_up(5)}.to change{ subject.balance }.by(5)
+      expect{ subject.top_up(5)}.to change{ subject.balance }.by(5)
     end
 
     it "raises an exception when the maximum balance is exceeded" do
@@ -48,9 +48,23 @@ describe Oystercard do
 
   end
 
-    describe "#touch_in" do
-      it { is_expected.to respond_to(:touch_in) }
+  describe "#touch_in" do
+
+    it { is_expected.to respond_to(:touch_in) }
+
+    it "cannot touch_in unless it has the minimum fare" do
+      expect{ subject.touch_in }.to raise_error if "Balance is too low"
     end
+
+  end
+
+  describe "#touch_out" do
+
+    it "touch_out deducts the minimum fare" do
+      expect{ subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
+    end
+
+  end
 
     describe "#journey" do
 
