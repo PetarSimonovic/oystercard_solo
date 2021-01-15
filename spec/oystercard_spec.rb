@@ -3,6 +3,8 @@ require 'oystercard'
 describe Oystercard do
 
   let(:topped_up_card) { Oystercard.new(Oystercard::CARD_LIMIT) }
+  let(:entry_station) { double :station }
+  let(:exit_station) { double :station }
 
 
   describe '#initialize' do
@@ -56,6 +58,11 @@ describe Oystercard do
       expect{ subject.touch_in }.to raise_error if "Balance is too low"
     end
 
+    it "records entry_station" do
+      topped_up_card.touch_in(:station)
+      expect(topped_up_card.journey).to include(:entry_station => :station)
+    end
+
   end
 
   describe "#touch_out" do
@@ -71,7 +78,7 @@ describe Oystercard do
       context "it should touch_in before journey" do
 
         before do
-          topped_up_card.touch_in
+          topped_up_card.touch_in(:station)
         end
 
         it "should be in_journey after touch_in" do
